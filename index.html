@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Processing</title>
+</head>
+<body>
+    <h1>Upload a Marathi PDF</h1>
+    <form action="/process" method="POST" enctype="multipart/form-data">
+        <input type="file" name="pdf_file" accept="application/pdf" required>
+        <button type="submit">Process PDF</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            formData.append('pdf_file', event.target.pdf_file.files[0]);
+            const response = await fetch(event.target.action, {
+                method: event.target.method,
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.error) {
+                document.getElementById('result').innerText = data.error;
+            } else {
+                document.getElementById('result').innerText = `Summary: ${data.summary}\nKeywords: ${data.keywords.join(', ')}`;
+            }
+        });
+    </script>
+</body>
+</html>
